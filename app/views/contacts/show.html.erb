@@ -6,31 +6,34 @@
 </ul>
 
 <p><a href="/companies/<%= @contact.company.id %>">Back to <%= @contact.company.name %></a></p>
+<% if @current_user %>
+  <h3>Sales Activity</h3>
 
-<h3>Sales Activity</h3>
-
-<ul>
-  <% for activity in @contact.activities %>
-    <li>
-      <%= activity.activity_type %>
-      with <%= activity.contact.first_name %> <%= activity.contact.last_name %>
-      <br>
-      <%= activity.note %>
-    </li>
-  <% end %>
-</ul>
-
-<h4>New Sales Activity</h4>
-
-<%= form_with model: @activity do |form| %>
-  <%= form.hidden_field "contact_id" %>
-  <p>
-    <%= form.select "activity_type", ["call", "email", "meeting"] %>
-    with <%= @contact.first_name %> <%= @contact.last_name %>
-  </p>
-  <p>
-    <%= form.label "note" %>
-    <%= form.text_area "note" %>
-  </p>
-  <%= form.submit %>
+  <ul>
+    <% for activity in @contact.activities.where({ user_id: @current_user.id }) %>
+      <li>
+        <%= activity.activity_type %>
+        with <%= activity.contact.first_name %> <%= activity.contact.last_name %>
+        <br>
+        <%= activity.note %>
+      </li>
+    <% end %>
+  </ul>
 <% end %>
+
+<% if @current_user %>
+  <h4>New Sales Activity</h4>
+
+  <%= form_with model: @activity do |form| %>
+    <%= form.hidden_field "contact_id" %>
+    <p>
+      <%= form.select "activity_type", ["call", "email", "meeting"] %>
+      with <%= @contact.first_name %> <%= @contact.last_name %>
+    </p>
+    <p>
+      <%= form.label "note" %>
+      <%= form.text_area "note" %>
+    </p>
+    <%= form.submit %>
+  <% end %>
+<% end %> 
